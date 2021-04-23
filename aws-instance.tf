@@ -18,31 +18,9 @@ resource "aws_instance" "web-server" {
   instance_type = "t2.micro"
   vpc_security_group_ids = [ aws_security_group.web-server.id ]
   key_name = "logkey"
-#  user_data = <<-EOF
-#
-#    Content-Type: multipart/mixed; boundary="//"
-#MIME-Version: 1.0
-#
-#--//
-#Content-Type: text/cloud-config; charset="us-ascii"
-#MIME-Version: 1.0
-#Content-Transfer-Encoding: 7bit
-#Content-Disposition: attachment; filename="cloud-config.txt"
-#
-#cloud-config
-#cloud_final_modules:
-#- [users-groups, once]
-#users:
-#  - name: centos
-#    ssh-authorized-keys: 
-#    - PublicKeypair
-#
-#EOF
-}
-
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC+EHkcujhnlJqi9hK5uEAT/o4xp8cuYtbtgyvZo9diIxhGvOb1ZKSk2ne3+XBH8HJvuOOqmhu0KwnL+tAGF6Q1LCoGjFPZLF+xrwvQeEuE7VCzTRJRvtA6fhrVc8WQPl4Ib1B8LBwDS+/JJRVpiNRpcjUbZrSSDyvmTF6V6FRaJie5AsCYNENXXV+4WgqmqL7cR8S49t/8tGpEVeJMk+HIXpzDzJxJ2U5zpRV9FsHEiTM8KavhvlHEXP5AJqjS/mEfdKBKt7/xwUij7JzU51OccWyBXdF0EBb/K4gyW9h0m8oCrYu44J5SqCfCSYkdES5rEXZrxA5iWIUssFKLcNGzL9ifHO1PC/NMAgOQ+HjAvvAjjHA83ACl9y4SEwaRnEMokhFStoFniWUHZ9E45w6+0YseW60Qno4j2r+MtdyRUPEN/a+WFwSk3KUkzNr5lZ4F1tngAYziib7iVWHgI/D9xH1BgCLYS6JpDf5R1VTjhMa9DFFF2/1+6PeE+c2Yit7FToZfJYTiYDrUigIZdrP+pQlCyjyRlxbfxbIyEs/RDIG+t2LanCp9ZlgY6txWll4RFPgZE1BW/PqXFfrTcNf75VeKKJsysEjJrweWxU6fsGeIJDXikrAMHAc3AGGy1inrPzW9Ww2/zLwvkOn0RBPIW33payVcWhe74S6Shq7WyQ== petar.nikolov@softwaregroup.com"
+  user_data = <<-EOF
+                
+  EOF
 }
 
 resource "aws_security_group" "web-server" {
@@ -84,6 +62,21 @@ resource "docker_container" "nginx" {
   }
 }
 
+resource "null_resource" "epel" {
+    provisioner "local-exec" {
+        command = "sudo yum install -y epel-release"
+    }
+}
+resource "null_resource" "nginx" {
+    provisioner "local-exec" {
+        command = "sudo yum –y install nginx"
+    }
+}
+resource "null_resource" "start" {
+    provisioner "local-exec" {
+        command = "sudo systemctl start nginx && sudo systemctl enable nginx"
+    }
+}
 output "instance_ips" {
   value = aws_instance.web-server.public_ip
 }
