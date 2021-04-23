@@ -18,6 +18,15 @@ resource "aws_instance" "web-server" {
   instance_type = "t2.micro"
   vpc_security_group_ids = [ aws_security_group.web-server.id ]
   key_name = "logkey"
+
+  provisioner "remote-exec" {
+      inline = [
+        "sudo yum install -y epel-release",
+        "sudo yum –y install nginx",
+        "sudo systemctl start nginx",
+        "sudo systemctl enable nginx",
+      ]
+    }
   user_data = <<-EOF
                 
   EOF
@@ -62,21 +71,6 @@ resource "docker_container" "nginx" {
   }
 }
 
-resource "null_resource" "epel" {
-    provisioner "local-exec" {
-        command = "sudo yum install -y epel-release"
-    }
-}
-resource "null_resource" "nginx" {
-    provisioner "local-exec" {
-        command = "sudo yum –y install nginx"
-    }
-}
-resource "null_resource" "start" {
-    provisioner "local-exec" {
-        command = "sudo systemctl start nginx && sudo systemctl enable nginx"
-    }
-}
 output "instance_ips" {
   value = aws_instance.web-server.public_ip
 }
