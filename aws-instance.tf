@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-1"
+  region = "eu-west-1"
   key = "${var.aws_api_key}"
   secret = "${var.aws_secret_key}"
 }
