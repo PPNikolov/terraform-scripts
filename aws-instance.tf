@@ -11,7 +11,7 @@ resource "aws_instance" "web-server" {
   key_name = "logkey"
 
   user_data = <<-EOF
-        #!/bin/bash
+        #! /bin/bash
         sudo yum install -y epel-release
         sudo yum –y install nginx
         sudo systemctl start nginx
