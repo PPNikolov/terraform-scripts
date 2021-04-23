@@ -19,11 +19,7 @@ resource "aws_instance" "web-server" {
   vpc_security_group_ids = [ aws_security_group.web-server.id ]
   key_name = "logkey"
   user_data = "${file("install_nginx.sh")}"
-  provisioner "remote-exec" {
-    command = "cd /tmp && sudo curl -XGET https://webstrg.s3-eu-west-1.amazonaws.com/index.html -O && \ 
-               curl -XGET https://webstrg.s3-eu-west-1.amazonaws.com/index.html -O"
   }
-}
 
 resource "aws_security_group" "web-server" {
   name = "web-srv1"
