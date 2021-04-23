@@ -9,18 +9,7 @@ resource "aws_instance" "web-server" {
   instance_type = "t2.micro"
   vpc_security_group_ids = [ aws_security_group.web-server.id ]
   key_name = "logkey"
-
-  user_data = <<-EOF
-        #! /bin/bash
-        sudo yum install -y epel-release
-        sudo yum –y install nginx
-        sudo systemctl start nginx
-        sudo systemctl enable nginx
- 
-  EOF
-  tags = {
-           Name="terraform"
-  }
+  user_data = "${file("install_nginx.sh")}"
 }
 
 resource "aws_security_group" "web-server" {
