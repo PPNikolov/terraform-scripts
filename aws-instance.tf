@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    docker = {
-      source = "kreuzwerker/docker"
-    }
-  }
-  required_version = ">= 0.13"
-}
-
 provider "aws" {
   region = "eu-west-1"
   access_key = "${var.aws_api_key}"
@@ -19,17 +10,17 @@ resource "aws_instance" "web-server" {
   vpc_security_group_ids = [ aws_security_group.web-server.id ]
   key_name = "logkey"
 
-  provisioner "remote-exec" {
-      inline = [
-        "sudo yum install -y epel-release",
-        "sudo yum –y install nginx",
-        "sudo systemctl start nginx",
-        "sudo systemctl enable nginx",
-      ]
-    }
   user_data = <<-EOF
-                
+        #!/bin/bash
+        sudo yum install -y epel-release
+        sudo yum –y install nginx
+        sudo systemctl start nginx
+        sudo systemctl enable nginx
+ 
   EOF
+  tags = {
+           Name="terraform"
+  }
 }
 
 resource "aws_security_group" "web-server" {
@@ -55,20 +46,6 @@ resource "aws_security_group" "web-server" {
    protocol = "-1"
    cidr_blocks = ["0.0.0.0/0"]
  }
-}
-
-resource "docker_image" "nginx" {
-  name         = "nginx:latest"
-  keep_locally = false
-}
-
-resource "docker_container" "nginx" {
-  image = docker_image.nginx.latest
-  name  = "tutorial"
-  ports {
-    internal = 80
-    external = 80
-  }
 }
 
 output "instance_ips" {
