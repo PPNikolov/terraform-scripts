@@ -17,26 +17,27 @@ resource "aws_instance" "web-server" {
   ami = "ami-0019f18ee3d4157d3"
   instance_type = "t2.micro"
   vpc_security_group_ids = [ aws_security_group.web-server.id ]
-  user_data = <<-EOF
-
-    Content-Type: multipart/mixed; boundary="//"
-MIME-Version: 1.0
-
---//
-Content-Type: text/cloud-config; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="cloud-config.txt"
-
+  key_name = "logkey"
+#  user_data = <<-EOF
+#
+#    Content-Type: multipart/mixed; boundary="//"
+#MIME-Version: 1.0
+#
+#--//
+#Content-Type: text/cloud-config; charset="us-ascii"
+#MIME-Version: 1.0
+#Content-Transfer-Encoding: 7bit
+#Content-Disposition: attachment; filename="cloud-config.txt"
+#
 #cloud-config
-cloud_final_modules:
-- [users-groups, once]
-users:
-  - name: root
-    ssh-authorized-keys: 
-    - PublicKeypair
-
-EOF
+#cloud_final_modules:
+#- [users-groups, once]
+#users:
+#  - name: centos
+#    ssh-authorized-keys: 
+#    - PublicKeypair
+#
+#EOF
 }
 
 resource "aws_key_pair" "deployer" {
