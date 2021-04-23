@@ -10,5 +10,5 @@ resource "aws_instance" "web-server" {
 }
 
 output "instance_ips" {
-  value = aws_instance.tfvm.public_ip
+  value = aws_instance.web-server.public_ip
 }
